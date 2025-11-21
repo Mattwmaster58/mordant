@@ -51,6 +51,7 @@ object TerminalDetection {
             "hyper", "wezterm" -> return true
             "iterm.app" -> return iTermVersionSupportsTruecolor()
             "mintty" -> return minttyVersionSupportsHyperlinks()
+            "vscode" -> return vsCodeVersionSupportsHyperlinks()
         }
         when (getTerm()) {
             "xterm-kitty", "alacritty" -> return true
@@ -175,6 +176,14 @@ object TerminalDetection {
         return (ver[0] > 2) ||
                 (ver[0] == 2 && ver[1] > 9) ||
                 (ver[0] == 2 && ver[1] == 9 && ver[2] > 6)
+    }
+
+    private fun vsCodeVersionSupportsHyperlinks(): Boolean {
+        val ver = getEnv("TERM_PROGRAM_VERSION")?.split(".")?.mapNotNull { it.toIntOrNull() }
+        if (ver?.size < 2) return false
+
+        // https://code.visualstudio.com/updates/v1_72#_hyperlink-support
+        return ver[0] > 0 && ver[1] >= 72
     }
 
     private fun isCI(): Boolean {
